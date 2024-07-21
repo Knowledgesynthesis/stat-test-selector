@@ -158,22 +158,35 @@ def get_recommended_test(answers):
     return result if isinstance(result, str) else 'No specific test found for this combination'
 
 def main():
+    if 'current_question' not in st.session_state:
+        st.session_state.current_question = 0
+        st.session_state.answers = {}
+        st.session_state.result = None
+
+    def handle_answer(answer):
+        st.session_state.answers[questions[st.session_state.current_question]['id']] = answer
+        next_question = get_next_question(st.session_state.answers)
+        if next_question:
+            st.session_state.current_question = next((index for (index, q) in enumerate(questions) if q['id'] == next_question), None)
+        else:
+            st.session_state.result = get_recommended_test(st.session_state.answers)
+
     st.title("Statistical Test Selector")
     st.write("Answer the questions to find the right statistical test")
 
-    answers = {}
-    for question in questions:
-        options = [opt['label'] for opt in question['options']]
-        answer = st.radio(question['text'], options, key=question['id'])
-        value = next(opt['value'] for opt in question['options'] if opt['label'] == answer)
-        answers[question['id']] = value
-
-        next_question = get_next_question(answers)
-        if next_question and next_question != question['id']:
-            st.stop()
-
-    test = get_recommended_test(answers)
-    st.success(f"The recommended test is: {test}")
+    if st.session_state.result:
+        st.success(f"The recommended test is: {st.session_state.result}")
+        if st.button('Start Over'):
+            st.session_state.current_question = 0
+            st.session_state.answers = {}
+            st.session_state.result = None
+    else:
+        question = questions[st.session_state.current_question]
+        st.write(question['text'])
+        for option in question['options']:
+            if st.button(option['label']):
+                handle_answer(option['value'])
+                st.experimental_rerun()
 
 if __name__ == "__main__":
     main()
