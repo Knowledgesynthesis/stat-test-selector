@@ -190,3 +190,11 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# Footer
+st.markdown("""
+    <div style="text-align: center; margin-top: 50px; padding: 10px; background-color: #0E1117; color: white;">
+        Web app made by Bashar Hasan, MD
+    </div>
+""", unsafe_allow_html=True)
