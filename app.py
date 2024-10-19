@@ -51,73 +51,37 @@ decision_tree = {
         'continuous': {
             'parametric': {
                 'one': 'One sample t-test',
-                'two': {
-                    'paired': 'Paired t-test',
-                    'unpaired': 'Unpaired t-test'
-                },
-                'more': {
-                    'paired': 'Repeated-measures ANOVA',
-                    'unpaired': 'One-way ANOVA'
-                }
+                'two': {'paired': 'Paired t-test', 'unpaired': 'Unpaired t-test'},
+                'more': {'paired': 'Repeated-measures ANOVA', 'unpaired': 'One-way ANOVA'}
             },
             'nonparametric': {
                 'one': 'Wilcoxon signed-rank',
-                'two': {
-                    'paired': 'Wilcoxon signed-rank',
-                    'unpaired': 'Wilcoxon-Mann-Whitney'
-                },
-                'more': {
-                    'paired': 'Friedman',
-                    'unpaired': 'Kruskal-Wallis'
-                }
+                'two': {'paired': 'Wilcoxon signed-rank', 'unpaired': 'Wilcoxon-Mann-Whitney'},
+                'more': {'paired': 'Friedman', 'unpaired': 'Kruskal-Wallis'}
             }
         },
         'ordinal': {
             'one': 'Sign test',
-            'two': {
-                'paired': 'Sign test',
-                'unpaired': 'Wilcoxon-Mann-Whitney'
-            },
-            'more': {
-                'paired': 'Friedman',
-                'unpaired': 'Kruskal-Wallis'
-            }
+            'two': {'paired': 'Sign test', 'unpaired': 'Wilcoxon-Mann-Whitney'},
+            'more': {'paired': 'Friedman', 'unpaired': 'Kruskal-Wallis'}
         },
         'nominal': {
             'one': 'Chi-square goodness-of-fit',
-            'two': {
-                'paired': 'McNemar',
-                'unpaired': 'Chi-square test of homogeneity'
-            },
-            'more': {
-                'paired': "Cochran's Q test",
-                'unpaired': 'Chi-square test'
-            }
+            'two': {'paired': 'McNemar', 'unpaired': 'Chi-square test of homogeneity'},
+            'more': {'paired': "Cochran's Q test", 'unpaired': 'Chi-square test'}
         }
     },
     'relationship': {
-        'continuous': {
-            'parametric': 'Pearson correlation',
-            'nonparametric': 'Spearman correlation'
-        },
+        'continuous': {'parametric': 'Pearson correlation', 'nonparametric': 'Spearman correlation'},
         'ordinal': 'Spearman correlation',
         'nominal': {
             'one': 'Chi-square goodness-of-fit',
-            'two': {
-                'paired': 'McNemar',
-                'unpaired': 'Chi-square test of independence'
-            },
-            'more': {
-                'paired': "Cochran's Q test",
-                'unpaired': 'Chi-square test'
-            }
+            'two': {'paired': 'McNemar', 'unpaired': 'Chi-square test of independence'},
+            'more': {'paired': "Cochran's Q test", 'unpaired': 'Chi-square test'}
         }
     },
     'predict': {
-        'continuous': {
-            'parametric': 'Linear regression',
-            'nonparametric': 'Nonparametric regression'
-        },
+        'continuous': {'parametric': 'Linear regression', 'nonparametric': 'Nonparametric regression'},
         'ordinal': 'Nonparametric regression',
         'nominal': 'Logistic regression'
     }
@@ -180,17 +144,18 @@ def main():
             st.session_state.current_question = 0
             st.session_state.answers = {}
             st.session_state.result = None
+            st.rerun()
     else:
         question = questions[st.session_state.current_question]
-        st.write(question['text'])
-        for option in question['options']:
-            if st.button(option['label']):
-                handle_answer(option['value'])
-                st.experimental_rerun()
+        answer = st.radio(question['text'], [option['label'] for option in question['options']])
+
+        if st.button('Next'):
+            selected_value = next(option['value'] for option in question['options'] if option['label'] == answer)
+            handle_answer(selected_value)
+            st.rerun()
 
 if __name__ == "__main__":
     main()
-
 
 # Footer
 st.markdown("""
